@@ -23,7 +23,7 @@ const CreatePoll = () => {
       />
       <Text style={styles.label}>Options</Text>
       {options.map((option, index) => (
-        <View style={{justifyContent:'center'}}>
+        <View key={index} style={{ justifyContent: "center" }}>
           <TextInput
             key={index}
             value={option}
@@ -43,11 +43,11 @@ const CreatePoll = () => {
             name="x"
             size={18}
             color="gray"
-            onPress={()=>{
-                //delete option based on index
-                const updated = [...options];
-                updated.splice(index, 1);
-                setOptions(updated);
+            onPress={() => {
+              //delete option based on index
+              const updated = [...options];
+              updated.splice(index, 1);
+              setOptions(updated);
             }}
           />
         </View>
