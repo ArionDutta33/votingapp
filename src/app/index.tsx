@@ -2,12 +2,17 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import { Link, Stack } from "expo-router";
+import AntDesign from '@expo/vector-icons/AntDesign';
 const polls = [{id:1},{id:2},{id:3}];
 
 const HomeScreen = () => {
   return (
     <>
-      <Stack.Screen options={{ title: "Polls" }} />
+      <Stack.Screen options={{ title: "Polls" ,headerRight:()=>(
+        <Link href={'/poll/new'}>
+        <AntDesign name="plus" size={24} color="black" />
+        </Link>
+        )}} />
       <GestureHandlerRootView>
         <FlatList
           data={polls}
