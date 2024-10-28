@@ -4,21 +4,27 @@ import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import { Link, Stack } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { supabase } from "../lib/supabase";
-// const polls = [{ id: 1 }, { id: 2 }, { id: 3 }];
-
+import { Polls } from "../types/db";
 const HomeScreen = () => {
-  const [polls, setPolls] = useState([]);
+  const [polls, setPolls] = useState<Polls[]>([]);
 
   useEffect(() => {
-    const fetchPolls = async () => {
-      console.log("fetchPolls");
-      let { data, error } = await supabase.from("Polls").select("*");
-      if (error) {
-        Alert.alert("error fetching polls", error.message);
-      }
-      console.log(data);
-      setPolls(data); //!error
-    };
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Fetches all polls from the "Polls" table in the database using Supabase.
+     * Alerts the user if there is an error during the fetch operation.
+     * Sets the fetched polls data to the state.
+     */
+    /******  8f329b69-ea56-4a2b-8ffd-d84d1130ef1f  *******/ const fetchPolls =
+      async () => {
+        console.log("fetchPolls");
+        let { data, error } = await supabase.from("Polls").select("*");
+        if (error) {
+          Alert.alert("error fetching polls", error.message);
+        }
+        console.log(data);
+        setPolls(data);
+      };
     fetchPolls();
   }, []);
 
@@ -48,9 +54,7 @@ const HomeScreen = () => {
           contentContainerStyle={styles.container}
           renderItem={({ item }) => (
             <Link href={`/poll/${item.id}`} style={styles.pollContainer}>
-              <Text style={styles.pollTitle}>
-                {item.id} : Example poll question //!error
-              </Text>
+              <Text style={styles.pollTitle}>{item.question}</Text>
             </Link>
           )}
         />

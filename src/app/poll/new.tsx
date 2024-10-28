@@ -1,16 +1,45 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Alert, Button, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
-import { Stack } from "expo-router";
+import { Redirect, router, Stack } from "expo-router";
 import {
   TextInput,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Feather from "@expo/vector-icons/Feather";
+import { useAuth } from "@/src/providers/AuthProvider";
+import { supabase } from "@/src/lib/supabase";
 const CreatePoll = () => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
-  const createPoll = () => {};
+  const [error, setError] = useState("");
+  const { user } = useAuth();
+  const createPoll = async () => {
+    setError("");
+    if (!question) {
+      setError("Please provide the question");
+      return;
+    }
+    const validOptions = options.filter((option) => !!option);
+    if (validOptions.length < 2) {
+      setError("Please provide at least two options");
+      return;
+    }
 
+    const { data, error } = await supabase
+      .from("Polls")
+      .insert([{ question, validOptions }])
+      .select();
+    if (error) {
+      Alert.alert("Failedd to create poll");
+      console.log(error);
+      return;
+    }
+    router.back();
+  };
+
+  if (!user) {
+    return <Redirect href={"/login"} />;
+  }
   return (
     <GestureHandlerRootView style={styles.container}>
       <Stack.Screen options={{ title: "New Poll" }} />
@@ -57,7 +86,8 @@ const CreatePoll = () => {
         onPress={() => setOptions([...options, ""])}
       />
 
-      <Button title="Create Poll" />
+      <Button title="Create Poll" onPress={createPoll} />
+      <Text style={{ color: "crimson", fontSize: 18 }}>{error}</Text>
     </GestureHandlerRootView>
   );
 };
