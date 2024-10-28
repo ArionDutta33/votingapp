@@ -5,8 +5,8 @@ import { useAuth } from "@/src/providers/AuthProvider";
 
 const AuthLayout = () => {
   const { user } = useAuth();
-  if (!user) {
-    return <Redirect href={"/login"} />;
+  if (user) {
+    return <Redirect href={"/profile"} />;
   }
   //   if (user) <Redirect href={"/profile"} />;
   return <Slot />;
