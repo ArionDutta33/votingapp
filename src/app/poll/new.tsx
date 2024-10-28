@@ -8,38 +8,47 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 import { useAuth } from "@/src/providers/AuthProvider";
 import { supabase } from "@/src/lib/supabase";
+
 const CreatePoll = () => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
   const [error, setError] = useState("");
   const { user } = useAuth();
+
   const createPoll = async () => {
     setError("");
     if (!question) {
       setError("Please provide the question");
       return;
     }
+
     const validOptions = options.filter((option) => !!option);
     if (validOptions.length < 2) {
       setError("Please provide at least two options");
       return;
     }
 
-    const { data, error } = await supabase
+    // Insert poll into the Polls table, including the options as an array
+    const { data: pollData, error: pollError } = await supabase
       .from("Polls")
-      .insert([{ question, validOptions }])
-      .select();
-    if (error) {
-      Alert.alert("Failedd to create poll");
-      console.log(error);
+      .insert([{ question, options: validOptions }]) // Ensure you pass options here
+      .select()
+      .single();
+
+    if (pollError) {
+      Alert.alert("Failed to create poll");
+      console.error(pollError);
       return;
     }
+
+    // Navigate back after successful creation
     router.back();
   };
 
   if (!user) {
     return <Redirect href={"/login"} />;
   }
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <Stack.Screen options={{ title: "New Poll" }} />
@@ -54,7 +63,6 @@ const CreatePoll = () => {
       {options.map((option, index) => (
         <View key={index} style={{ justifyContent: "center" }}>
           <TextInput
-            key={index}
             value={option}
             onChangeText={(text) => {
               const updated = [...options];
@@ -73,7 +81,7 @@ const CreatePoll = () => {
             size={18}
             color="gray"
             onPress={() => {
-              //delete option based on index
+              // Delete option based on index
               const updated = [...options];
               updated.splice(index, 1);
               setOptions(updated);
@@ -85,7 +93,6 @@ const CreatePoll = () => {
         title="Add Options"
         onPress={() => setOptions([...options, ""])}
       />
-
       <Button title="Create Poll" onPress={createPoll} />
       <Text style={{ color: "crimson", fontSize: 18 }}>{error}</Text>
     </GestureHandlerRootView>

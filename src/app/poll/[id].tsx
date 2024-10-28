@@ -12,6 +12,7 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Polls } from "@/src/types/db";
 import { supabase } from "@/src/lib/supabase";
+import { useAuth } from "@/src/providers/AuthProvider";
 
 // const poll = {
 //   question: "React Native vs Flutter",
@@ -22,7 +23,7 @@ const PollDetails = () => {
   const [selected, setSelected] = useState("");
   const [poll, setPoll] = useState<Polls | null>(null);
   const { id } = useLocalSearchParams<{ id: string }>();
-
+  const { user } = useAuth();
   useEffect(() => {
     /*************  ✨ Codeium Command ⭐  *************/
     /**
@@ -47,8 +48,19 @@ const PollDetails = () => {
     fetchPolls();
   }, []);
 
-  const vote = () => {
-    console.log("Vote");
+  const vote = async () => {
+    console.log("Voting....");
+
+    const { data, error } = await supabase
+      .from("Votes")
+      .insert([{ option: selected, poll_id: poll.id, user_id: user?.id }])
+      .select();
+
+    if (error) {
+      Alert.alert("Failed to vote");
+    } else {
+      Alert.alert("Thank you for your vote!");
+    }
   };
   if (!poll) {
     return <ActivityIndicator />;
