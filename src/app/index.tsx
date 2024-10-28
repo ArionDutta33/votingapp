@@ -27,13 +27,21 @@ const HomeScreen = () => {
       <Stack.Screen
         options={{
           title: "Polls",
+          //center the title
+          headerTitleAlign: "center",
           headerRight: () => (
             <Link href={"/poll/new"}>
               <AntDesign name="plus" size={24} color="black" />
             </Link>
           ),
+          headerLeft: () => (
+            <Link href={"/profile"}>
+              <AntDesign name="user" size={24} color="black" />
+            </Link>
+          ),
         }}
       />
+      {/* {consol} */}
       <GestureHandlerRootView>
         <FlatList
           data={polls}
@@ -69,3 +77,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+//*og
